@@ -1,0 +1,75 @@
+.infoBox {
+    position: relative;
+    width: 400px;
+    height: 30px;
+    margin: 0 auto;
+    font-family: 'Roboto', sans-serif;
+}
+
+.infoBox span {
+    background-color: #575757;
+    color: white;
+    font-weight: bold;
+    padding: 2px;
+    border-radius: 3px;
+}
+
+.field {
+    width: 400px;
+    height: 400px;
+    margin: 0 auto;
+    border: 1px solid black;
+    background: repeat url("images/background.png");
+}
+
+.win {
+    position: absolute;
+    top: 35px;
+    left: 50%;
+    transform: translate(-50%);
+    width: 400px;
+    height: 400px;
+    background-color: rgb(90, 203, 255);
+    border: 3px solid #0099ff;
+}
+
+.win p {
+    position: relative;
+    text-align: center;
+    font-size: 5em;
+    font-family: 'Roboto', sans-serif   ;
+}
+
+.win .continue {
+    font-size: 2em;
+    background-color: #303030;
+    color: white;
+}
+
+.win .continue:hover {
+    background-color: #575757;
+}
+
+.user {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    background-color: dodgerblue;
+}
+
+.target {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    background-color: orangered;
+}
+
+.hide {
+    display: none;
+}
+
+.show {
+    display: block;
+}
