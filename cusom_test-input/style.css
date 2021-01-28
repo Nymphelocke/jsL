@@ -73,3 +73,11 @@
 .show {
     display: block;
 }
+
+.rules {
+    width: 400px;
+    height: 400px;
+    margin: 0 auto;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.2em;
+}

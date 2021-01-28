@@ -6,52 +6,69 @@ document.addEventListener('DOMContentLoaded', () => {
     const continueButton = document.querySelector('.continue');
     const field = document.querySelector('.field');
     const scoreField = document.querySelector('#score');
+    const levelField = document.querySelector('#level');
 
-    const userData = {
-        'score': 0,
-        'x_pos': 0,
-        'y_pos': 0
-    };
-    const targetData = {
-        'x_pos': 0,
-        'y_pos': 0
+    const gameData = {
+        state: 'play',
+        level: 0,
+        baseScore: 15
     }
 
-    // Continue event
-    continueButton.addEventListener('click', () => {
+    const userData = {
+        score: 0,
+        x_pos: 0,
+        y_pos: 0
+    };
+    const targetData = {
+        x_pos: 0,
+        y_pos: 0
+    }
+
+    // Следующий уровень
+    function nextLevel() {
+        gameData.state = 'play';
         winWindow.classList.remove('show');
         winWindow.classList.add('hide');
+        gameData.level += 1;
+        levelField.innerHTML = gameData.level;
+        gameData.baseScore = 15 + gameData.level;
         spawnTarget();
-    })
+    }
+    continueButton.addEventListener('click', nextLevel)
 
-    // Key events
+    // События
     window.addEventListener('keydown', (event) => {
-        console.log(event.code);
         if (event.code === 'ArrowUp' || event.code === 'ArrowDown'
         || event.code === 'ArrowLeft' || event.code === 'ArrowRight') {
             moveUser(event.code);
             checkCollide();
+        } else if (event.code === 'Space' && gameData.state === 'win') {
+            nextLevel();
         }
     })
 
-    // Moving user
+    // Движение игрока
     function moveUser(where) {
         switch (where) {
             case 'ArrowUp':
                 userData.y_pos = moveCheck(userData.y_pos - 40);
                 user.style.top = userData.y_pos + 'px';
+                gameData.baseScore -= 1;
                 break;
             case 'ArrowDown':
                 userData.y_pos = moveCheck(userData.y_pos + 40);
                 user.style.top = userData.y_pos + 'px';
+                gameData.baseScore -= 1;
                 break;
             case 'ArrowLeft':
                 userData.x_pos = moveCheck(userData.x_pos - 40);
                 user.style.left = userData.x_pos + 'px';
+                gameData.baseScore -= 1;
                 break;
             case 'ArrowRight':
                 userData.x_pos = moveCheck(userData.x_pos + 40);
                 user.style.left = userData.x_pos + 'px';
+                gameData.baseScore -= 1;
                 break
             default:
                 console.log('Error')
@@ -59,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // console.log(`user coords x:${userData.x_pos} y:${userData.y_pos}`)
     }
 
-    // Move allow check
+    // Проверка доступности хода
     function moveCheck(position) {
         if (position <= 0) {
             return 0
@@ -70,12 +87,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Generate random position
+    // Генерация координаты
     function genPos() {
         return Math.floor(Math.floor(Math.random()*(1-360+1)+360) / 40) * 40;
     }
 
-    // Spawn user
+    // Спавн игрока
     function spawnUser() {
         userData.x_pos = genPos();
         userData.y_pos = genPos();
@@ -83,9 +100,9 @@ document.addEventListener('DOMContentLoaded', () => {
         user.style.top = userData.y_pos + 'px';
     }
 
-    // Spawn target
+    // Спавн цели
     function spawnTarget() {
-        //generate position
+        // генерация позиции
         let target = document.createElement('div');
         target.classList.add('target');
         while (true) {
@@ -102,18 +119,22 @@ document.addEventListener('DOMContentLoaded', () => {
         target.style.top = (targetData.y_pos - 40) + 'px';
     }
 
-    // Check collide
+    // Проверка столкновения
     function checkCollide() {
         if (userData.x_pos === targetData.x_pos && userData.y_pos === targetData.y_pos) {
             field.removeChild(document.querySelector('.target'));
             winWindow.classList.remove('hide');
             winWindow.classList.add('show');
-            userData.score += 1;
+            if (gameData.baseScore <= 0) {
+                gameData.baseScore = 0
+            }
+            userData.score += gameData.baseScore;
+            gameData.state = 'win';
             scoreField.innerHTML = userData.score;
         }
     }
 
-    // Initialization
+    // Загрузка
     function startGame() {
         spawnUser();
         spawnTarget();
