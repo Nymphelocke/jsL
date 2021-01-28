@@ -1,24 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Загрузка данных из кук
-    console.log(document.cookie.split(';'))
-
-    const user = document.querySelector('.user');
+    // const user = document.querySelector('.user');
     // const target = document.querySelector('.target');
     const winWindow = document.querySelector('.win');
     const continueButton = document.querySelector('.continue');
     const field = document.querySelector('.field');
     const scoreField = document.querySelector('#score');
     const levelField = document.querySelector('#level');
+    const clearScore = document.querySelector('.clearScore');
 
     const gameData = {
         state: 'play',
         level: 0,
+        score: 0,
         baseScore: 15
     }
 
     const userData = {
-        score: 0,
         x_pos: 0,
         y_pos: 0
     }
@@ -33,27 +31,33 @@ document.addEventListener('DOMContentLoaded', () => {
         gameData.state = 'play';
         winWindow.classList.remove('show');
         winWindow.classList.add('hide');
-        gameData.level += 1;
-        levelField.innerHTML = gameData.level;
+        updateGameStat();
         gameData.baseScore = 15 + gameData.level;
-        saveState();
         spawnTarget();
+        console.log(gameData)
     }
     continueButton.addEventListener('click', nextLevel)
 
     // События
     window.addEventListener('keydown', (event) => {
+        let user = document.querySelector('.user');
         if (event.code === 'ArrowUp' || event.code === 'ArrowDown'
         || event.code === 'ArrowLeft' || event.code === 'ArrowRight') {
-            moveUser(event.code);
+            moveUser(user, event.code);
             checkCollide();
         } else if (event.code === 'Space' && gameData.state === 'win') {
             nextLevel();
         }
     })
 
+    // Сброс очков
+    clearScore.addEventListener('click', function () {
+        clearData();
+
+    })
+
     // Движение игрока
-    function moveUser(where) {
+    function moveUser(user, where) {
         switch (where) {
             case 'ArrowUp':
                 userData.y_pos = moveCheck(userData.y_pos - 40);
@@ -101,6 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function spawnUser() {
         userData.x_pos = genPos();
         userData.y_pos = genPos();
+        let user = document.createElement('div');
+        user.classList.add('user');
+        field.appendChild(user);
         user.style.left = userData.x_pos + 'px';
         user.style.top = userData.y_pos + 'px';
     }
@@ -133,22 +140,50 @@ document.addEventListener('DOMContentLoaded', () => {
             if (gameData.baseScore <= 0) {
                 gameData.baseScore = 0
             }
-            userData.score += gameData.baseScore;
+            gameData.score += gameData.baseScore;
             gameData.state = 'win';
-            scoreField.innerHTML = userData.score;
+            updateGameStat();
+            gameData.level += 1;
+            saveData();
         }
     }
 
-    // Сохранение данных
-    function saveState() {
-        document.cookie = `level=${gameData.level}`
-        document.cookie = `score=${userData.score}`
+    function saveData() {
+        localStorage.setItem('level', gameData.level);
+        localStorage.setItem('score', gameData.score);
+    }
+
+    function loadData() {
+        gameData.level = parseInt(localStorage.getItem('level'));
+        gameData.score = parseInt(localStorage.getItem('score'));
+        updateGameStat();
+    }
+
+    function clearData() {
+        localStorage.setItem('level', '0');
+        localStorage.setItem('score', '0');
+        gameData.score = 0;
+        gameData.level = 0;
+        updateGameStat();
+    }
+
+    function updateGameStat() {
+        levelField.innerHTML = gameData.level;
+        scoreField.innerHTML = gameData.score;
+    }
+
+    function stopGame() {
+
     }
 
     // Загрузка
     function startGame() {
+        if (localStorage.getItem('level')) {
+            loadData();
+        }
         spawnUser();
         spawnTarget();
+        console.log(gameData)
         // console.log(`user coords x:${userData.x_pos} y:${userData.y_pos}`)
     }
 
