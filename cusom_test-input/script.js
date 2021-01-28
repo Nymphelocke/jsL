@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    // Загрузка данных из кук
+    console.log(document.cookie.split(';'))
+
     const user = document.querySelector('.user');
     // const target = document.querySelector('.target');
     const winWindow = document.querySelector('.win');
@@ -18,7 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
         score: 0,
         x_pos: 0,
         y_pos: 0
-    };
+    }
+
     const targetData = {
         x_pos: 0,
         y_pos: 0
@@ -32,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gameData.level += 1;
         levelField.innerHTML = gameData.level;
         gameData.baseScore = 15 + gameData.level;
+        saveState();
         spawnTarget();
     }
     continueButton.addEventListener('click', nextLevel)
@@ -132,6 +137,12 @@ document.addEventListener('DOMContentLoaded', () => {
             gameData.state = 'win';
             scoreField.innerHTML = userData.score;
         }
+    }
+
+    // Сохранение данных
+    function saveState() {
+        document.cookie = `level=${gameData.level}`
+        document.cookie = `score=${userData.score}`
     }
 
     // Загрузка
