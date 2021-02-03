@@ -1,3 +1,8 @@
+body {
+    background-color: #303030;
+    color: white
+}
+
 .infoBox {
     position: relative;
     width: 400px;
@@ -33,7 +38,8 @@
     height: 400px;
     margin: 0 auto;
     border: 1px solid black;
-    background: repeat url("images/background.png");
+    /*background: repeat url("images/background.png");*/
+    background: repeat url("images/grass_bg2.png");
 }
 
 .win {
@@ -70,14 +76,51 @@
     left: 0;
     width: 40px;
     height: 40px;
-    background-color: dodgerblue;
+}
+
+.idle_anim-1 {
+    background-image: url("images/user_anim-1.png");
+}
+
+.idle_anim-2 {
+    background-image: url("images/user_anim-2.png");
+}
+
+.idle_anim-3 {
+    background-image: url("images/user_anim-3.png");
+}
+
+.idle_anim-4 {
+    background-image: url("images/user_anim-4.png");
 }
 
 .target {
     position: relative;
     width: 40px;
     height: 40px;
-    background-color: orangered;
+}
+
+.target_anim-1 {
+    background-image: url("images/target_anim-1.png");
+}
+
+.target_anim-2 {
+    background-image: url("images/target_anim-2.png");
+}
+
+.target_anim-3 {
+    background-image: url("images/target_anim-3.png");
+}
+
+.target_anim-4 {
+    background-image: url("images/target_anim-4.png");
+}
+
+.tree {
+    position: relative;
+    width: 50px;
+    height: 80px;
+    background: no-repeat url("images/tree.png");
 }
 
 .hide {

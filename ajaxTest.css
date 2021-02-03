@@ -1,0 +1,59 @@
+body {
+    background-color: #D6D9DC;
+    font-family: "Trebuchet MS", sans-serif;
+}
+
+a {
+    color: #0099ff;
+    text-decoration: none;
+}
+
+a:visited {
+    color: #0099ff;
+}
+
+.container {
+    width: 400px;
+    background-color: white;
+    border: 1px solid darkslategray;
+    margin-bottom: 5px;
+}
+
+.content {
+    padding: 10px;
+}
+
+.username {
+    position: relative;
+}
+
+.text {
+    position: relative;
+}
+
+.navBlock {
+    width: 400px;
+    background-color: white;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    padding: 2px;
+}
+
+.navButton {
+    position: relative;
+    display: inline-block;
+    padding: 4px;
+    background-color: aliceblue;
+    border: 1px solid #0099ff;
+    border-radius: 5px;
+}
+
+.right {
+    float: right;
+}
+
+.not-active {
+    background-color: #d4d4d4;
+    border: 1px solid #b3b3b3;
+    color: #8d8d8d;
+}

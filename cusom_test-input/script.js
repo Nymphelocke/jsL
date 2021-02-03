@@ -8,12 +8,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const scoreField = document.querySelector('#score');
     const levelField = document.querySelector('#level');
     const clearScore = document.querySelector('.clearScore');
+    let treeElements = []
 
     const gameData = {
         state: 'play',
         level: 0,
         score: 0,
-        baseScore: 15
+        baseScore: 15,
+        trees: []
     }
 
     const userData = {
@@ -33,7 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
         winWindow.classList.add('hide');
         updateGameStat();
         gameData.baseScore = 15 + gameData.level;
+        removeTrees();
+        spawnTrees();
         spawnTarget();
+        spriteAnimate(true);
         console.log(gameData)
     }
     continueButton.addEventListener('click', nextLevel)
@@ -44,6 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.code === 'ArrowUp' || event.code === 'ArrowDown'
         || event.code === 'ArrowLeft' || event.code === 'ArrowRight') {
             moveUser(user, event.code);
+            console.log(targetData)
+            console.log(userData)
             checkCollide();
         } else if (event.code === 'Space' && gameData.state === 'win') {
             nextLevel();
@@ -107,9 +114,46 @@ document.addEventListener('DOMContentLoaded', () => {
         userData.y_pos = genPos();
         let user = document.createElement('div');
         user.classList.add('user');
-        field.appendChild(user);
+        user.classList.add('idle_anim-4');
+        field.prepend(user);
         user.style.left = userData.x_pos + 'px';
         user.style.top = userData.y_pos + 'px';
+    }
+
+    // Анимация игрока
+    function spriteAnimate(restart=false) {
+        let user = document.querySelector('.user');
+        let target = document.querySelector('.target');
+        let animationTimer = setInterval(() => {
+            setTimeout(() => {
+                user.classList.remove('idle_anim-4');
+                user.classList.add('idle_anim-1');
+                target.classList.remove('target_anim-4');
+                target.classList.add('target_anim-1');
+            }, 0);
+            setTimeout(() => {
+                user.classList.remove('idle_anim-1');
+                user.classList.add('idle_anim-2');
+                target.classList.remove('target_anim-1');
+                target.classList.add('target_anim-2');
+            }, 500);
+            setTimeout(() => {
+                user.classList.remove('idle_anim-2');
+                user.classList.add('idle_anim-3');
+                target.classList.remove('target_anim-2');
+                target.classList.add('target_anim-3');
+            }, 1000);
+            setTimeout(() => {
+                user.classList.remove('idle_anim-3');
+                user.classList.add('idle_anim-4');
+                target.classList.remove('target_anim-3');
+                target.classList.add('target_anim-4');
+            }, 1500);
+        }, 2000);
+        if (restart) {
+            clearInterval(animationTimer);
+            spriteAnimate();
+        }
     }
 
     // Спавн цели
@@ -117,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // генерация позиции
         let target = document.createElement('div');
         target.classList.add('target');
+        target.classList.add('target_anim-4');
         while (true) {
             targetData.x_pos = genPos();
             targetData.y_pos = genPos();
@@ -126,9 +171,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 break
             }
         }
-        field.appendChild(target);
+        ;
+        field.prepend(target);
         target.style.left = targetData.x_pos + 'px';
-        target.style.top = (targetData.y_pos - 40) + 'px';
+        target.style.top = (targetData.y_pos + 40) + 'px';
+    }
+
+    // Создание деревьев
+    function spawnTrees() {
+        function getRandomInt(max) {
+            return Math.floor(Math.random() * Math.floor(max));
+        }
+        let treeCount = getRandomInt(8);
+        for (let i = 1; i <= treeCount + 1; i++) {
+            let treeObject = document.createElement('div');
+            treeObject.classList.add('tree');
+            let pos_x = genPos();
+            let pos_y = genPos();
+            field.appendChild(treeObject);
+            treeObject.style.left = pos_x + 'px';
+            treeObject.style.top = (pos_y - 80 * i) + 'px';
+            gameData.trees.push([pos_x, pos_y]);
+            treeElements.push(treeObject);
+        }
+    }
+
+    // Удаление деревьев
+    function removeTrees() {
+        treeElements.forEach((item) => {
+            item.remove();
+        })
     }
 
     // Проверка столкновения
@@ -181,9 +253,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (localStorage.getItem('level')) {
             loadData();
         }
+        spawnTrees();
         spawnUser();
         spawnTarget();
-        console.log(gameData)
+        spriteAnimate();
+        console.log(gameData.trees.pos_y)
         // console.log(`user coords x:${userData.x_pos} y:${userData.y_pos}`)
     }
 
