@@ -1,42 +1,23 @@
 window.addEventListener('DOMContentLoaded', (item) => {
 
-    const BASE_URL = 'http://localhost:63343/jsL/ajaxTest.html'
-
-    // FOR AJAX
-    const URL_PAR_STRING = window.location.search;
-    const URL_PAR = new URLSearchParams(URL_PAR_STRING)
-    let current_page = ''
-    if (URL_PAR.get('page') && URL_PAR.get('page') >= 2) {
-        current_page = '?page=' + URL_PAR.get('page')
-        prev_page = '?page=' + (URL_PAR.get('page') - 1)
-    }
-    let prev_page_number = 1
-    let next_page_number = 2
-    if (URL_PAR.get('page')) {
-        next_page_number = parseInt(URL_PAR.get('page')) + 1
-        prev_page_number = parseInt(URL_PAR.get('page')) - 1
-    }
-    if (prev_page_number < 0) {
-        prev_page_number = 0
-    }
-
+    // генерация блока навигации
     function createNavDiv() {
         const navBlock = document.createElement('div')
         navBlock.classList.add('navBlock')
         const prevButton = document.createElement('div')
         prevButton.classList.add('navButton')
-        if (current_page === '') {
-            prevButton.classList.add('not-active')
-        }
         const nextButton = document.createElement('div')
         nextButton.classList.add('navButton', 'right')
         prevButton.innerHTML = 'назад'
         nextButton.innerHTML = 'вперед'
         document.body.appendChild(navBlock)
         navBlock.appendChild(prevButton)
+        prevButton.setAttribute('data-prev', 1)
         navBlock.appendChild(nextButton)
+        nextButton.setAttribute('data-next', 1)
     }
 
+    // генерация блока сообщения
     function createMessageDiv(username, text) {
         const container = document.createElement('div')
         const content = document.createElement('div')
@@ -53,37 +34,57 @@ window.addEventListener('DOMContentLoaded', (item) => {
         content.appendChild(name)
         content.appendChild(message)
     }
-
-    console.log(current_page)
-
-    $.ajax({
-        url: 'http://192.168.88.16/api/v1/messages/' + current_page,
-    })
-        .done(function (data) {
-            const nextPageUrl = data['next']
-            const prevPageUrl = data['previous']
-            let bannedMessageList = []
-            createNavDiv()
-            for (let i = 0; i < data.results.length; i++) {
-                let item = data.results[i]
-                if (bannedMessageList.includes(item.id_user_from)) {
-                    continue
-                }
-                bannedMessageList.push(item.id_user_from)
-                createMessageDiv(item.full_name, item.text)
-            }
-            createNavDiv()
-            const navButtons = document.querySelectorAll('.navButton')
-            navButtons.forEach((item) => {
-                if (item.innerHTML === 'назад' && prevPageUrl !== 'null') {
-                    if (prev_page_number === 0) {
-                        item.innerHTML = `назад`
-                    } else {
-                        item.innerHTML = `<a href="${BASE_URL}?page=${prev_page_number}">назад</a>`
-                    }
-                } else if (nextPageUrl != null) {
-                    item.innerHTML = `<a href="${BASE_URL}?page=${next_page_number}">вперед</a>`
-                }
-            })
+    // следующая страница
+    const changePage = function (url) {
+        clearContent()
+        getContent(url)
+    }
+    // динамическая подгрузка
+    function getContent(pageUrl='http://192.168.88.16/api/v1/messages/') {
+        $.ajax( {
+            url: pageUrl
         })
+            .done(function (data) {
+                let nextURL = data['next']
+                let prevURL = data['previous']
+                let prevButton = document.querySelector('[data-prev]')
+                let nextButton = document.querySelector('[data-next]')
+                if (prevURL) {
+                    prevButton.addEventListener('click', function () {
+                        clearContent()
+                        getContent(prevURL)
+                    })
+                }
+                if (nextURL) {
+                    nextButton.addEventListener('click', function () {
+                        clearContent()
+                        getContent(nextURL)
+                    })
+                }
+                let bannedMessageList = []
+                for (let i = 0; i < data.results.length; i++) {
+                    let item = data.results[i]
+                    if (bannedMessageList.includes(item.id_user_from)) {
+                        continue
+                    }
+                    bannedMessageList.push(item.id_user_from)
+                    createMessageDiv(item.full_name, item.text)
+                }
+                console.log(pageUrl)
+                console.log(data.results)
+                data.results = []
+            })
+    }
+    // очистка блоков сообщений
+    function clearContent() {
+        let messages = document.querySelectorAll('.container')
+        let buttonBlock = document.querySelector('.navBlock')
+        buttonBlock.remove()
+        messages.forEach((item) => {
+            item.remove()
+        })
+        createNavDiv()
+    }
+    createNavDiv()
+    getContent()
 })
