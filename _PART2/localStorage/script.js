@@ -15,7 +15,6 @@ const
     form = document.querySelector('form'),
     change = document.querySelector('#color');
 
-// TODO: save checkbox state & save color
 if (localStorage.getItem('checkbox')) {
     checkbox.checked = true
 }
